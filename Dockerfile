@@ -1,17 +1,24 @@
+# Use official node image as the base image
 FROM node:12.18.3-alpine as build
 
-WORKDIR /dist/src/app
+# Set the working directory
+WORKDIR /usr/local/app
 
-RUN npm cache clean --force
+COPY ./ /usr/local/app/
 
-COPY . .
-RUN npm install --force
-RUN npm run build --prod
+# install angular cli
+RUN npm install -g @angular/cli
+# Install all the dependencies
+RUN npm install
 
-FROM nginx:latest as ngi
+# Generate the build of the application
+RUN npm run build
 
-COPY --from=build /dist/src/app/dist/crudtuto-Front /usr/share/nginx/html
-COPY /nginx.conf /etc/nginx/conf.d/default.conf
+# Stage 2: Serve app with nginx server
+FROM nginx:latest
 
+# Copy the build output to replace the default nginx contents.
+COPY --from=build /usr/local/app/dist/achat-frontend /usr/share/nginx/html
 
-EXPOSE 4200
+# Expose port 80
+EXPOSE 80
