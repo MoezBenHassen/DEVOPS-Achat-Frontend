@@ -7,4 +7,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "4200:80"
+    volumes:
+      - ./src:/usr/src/app/src
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     image: moezbenhassen/achat-front
